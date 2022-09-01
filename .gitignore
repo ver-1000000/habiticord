@@ -1,0 +1,8 @@
+dist/
+Session.vim
+node_modules
+.env
+
+# prisma
+prisma/*.db
+prisma/*.db-journal

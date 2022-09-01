@@ -1,0 +1,36 @@
+{
+  "name": "habiticord",
+  "version": "1.0.0",
+  "description": "Habitica on Discord",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "db:migrate": "prisma migrate dev && prisma generate",
+    "db:reset": "prisma migrate reset",
+    "db:deploy": "prisma migrate deploy",
+    "dev": "tsc-watch --onSuccess 'node --no-warnings dist/index.js'",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prettier": "prettier --write 'src/**/*.{ts,html,scss}'",
+    "prettier:check": "prettier --check 'src/**/*.{ts,html,scss}'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ver-1000000/habiticord.git"
+  },
+  "author": "@Ver1000000000",
+  "license": "MIT",
+  "homepage": "https://github.com/ver-1000000/habiticord#README.md",
+  "devDependencies": {
+    "@types/node": "^18.7.14",
+    "prettier": "^2.7.1",
+    "prisma": "^4.3.0",
+    "tsc-watch": "^5.0.3",
+    "typescript": "^4.8.2"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.3.0",
+    "discord.js": "^14.3.0",
+    "dotenv": "*",
+    "node-fetch": "^3.2.10"
+  }
+}
