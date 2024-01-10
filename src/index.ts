@@ -1,7 +1,15 @@
 import { ActivityType, Client, ClientUser, IntentsBitField } from "discord.js";
 import { DISCORD_TOKEN } from "./environment.js";
-import { DbService } from "./services/db.service.js";
-import { Commands } from "./commands.js";
+import {
+  DbService,
+  HabiticaAPIService,
+  CommandsHandlerService,
+} from "./services/index.js";
+import {
+  RegisterCommand,
+  RegisterModalCommand,
+  UnregisterCommand,
+} from "./commands/index.js";
 
 /** 起点となるメインのアプリケーションクラス。 */
 class Bootstrap {
@@ -36,9 +44,20 @@ class Bootstrap {
   const intents = [
     IntentsBitField.Flags.DirectMessages,
     IntentsBitField.Flags.GuildMessages,
+    IntentsBitField.Flags.Guilds,
+    IntentsBitField.Flags.MessageContent,
   ];
   const client = new Client({ intents });
-  const dbService = new DbService(client);
+  const db = new DbService(client);
+  const api = new HabiticaAPIService();
+  const registerModal = new RegisterModalCommand(db, api);
+  const register = new RegisterCommand();
+  const unregister = new UnregisterCommand(db);
   await new Bootstrap(client).run();
-  await new Commands(client, dbService).run();
+  await new CommandsHandlerService(
+    client,
+    registerModal,
+    register,
+    unregister,
+  ).run();
 })();

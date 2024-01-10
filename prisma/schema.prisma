@@ -11,18 +11,18 @@ datasource db {
 }
 
 model User {
-  id        Int     @id @default(autoincrement())
-  discordId String  @unique
-  providers Provider[]
+  id            Int     @id @default(autoincrement())
+  discordId     String  @unique
+  providers     Provider[]
 }
 
 model Provider {
-  id        Int     @id @default(autoincrement())
-  userId    Int
-  uid       String
-  type      String
-  token     String?
-  password  String?
-  user      User    @relation(fields: [userId], references: [id])
+  id            Int     @id @default(autoincrement())
+  userId        Int
+  uid           String
+  type          String
+  token         String?
+  password      String?
+  user          User    @relation(fields: [userId], references: [id])
   @@unique([type, uid])
 }
