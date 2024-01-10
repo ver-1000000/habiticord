@@ -86,7 +86,10 @@ export class Commands {
     },
   };
 
-  constructor(private client: Client, private db: DbService) {}
+  constructor(
+    private client: Client,
+    private db: DbService,
+  ) {}
 
   async run() {
     this.commandsSet();
@@ -149,11 +152,11 @@ export class Commands {
       new TextInputBuilder()
         .setCustomId(id)
         .setLabel(label)
-        .setStyle(TextInputStyle.Short)
+        .setStyle(TextInputStyle.Short),
     );
     modal.addComponents(
       new ActionRowBuilder<TextInputBuilder>().addComponents(idInput),
-      new ActionRowBuilder<TextInputBuilder>().addComponents(tokenInput)
+      new ActionRowBuilder<TextInputBuilder>().addComponents(tokenInput),
     );
     return await interaction.showModal(modal);
   }

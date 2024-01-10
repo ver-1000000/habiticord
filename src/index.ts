@@ -26,9 +26,8 @@ class Bootstrap {
 
   /** readyイベントにフックして、ボットのステータスなどを設定する。 */
   private initializeBotStatus(user: ClientUser | null) {
-    user?.setPresence({
-      activities: [{ name: "Habitica", type: ActivityType.Competing }],
-    });
+    const activities = [{ name: "Habitica", type: ActivityType.Competing }];
+    user?.setPresence({ activities });
   }
 }
 
