@@ -26,3 +26,20 @@ model Provider {
   user          User    @relation(fields: [userId], references: [id])
   @@unique([type, uid])
 }
+
+model DiscordAttachment {
+  id            Int     @id @default(autoincrement())
+  attachmentId  String  @unique
+  contentType   String?
+  description   String?
+  duration      Int?
+  ephemeral     Boolean
+  height        Int?
+  name          String
+  proxyURL      String
+  size          Int
+  spoiler       Boolean
+  url           String
+  waveform      String?
+  width         Int?
+}

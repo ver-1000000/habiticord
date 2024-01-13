@@ -9,5 +9,7 @@ export const MESSAGES = {
   SUCCESS: {
     REGISTER: "登録が完了しました♪",
     UNREGISTER: "削除が完了しました♪",
+    ATTACHMENT_SAVED: "アタッチメントを保存しました♪",
+    ATTACHMENT_DELETED: "アタッチメントをすべて削除しました♪",
   },
 } as const;

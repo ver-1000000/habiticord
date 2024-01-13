@@ -1,5 +1,10 @@
-import { User, PrismaClient, Provider } from "@prisma/client";
-import { Client } from "discord.js";
+import {
+  User,
+  PrismaClient,
+  Provider,
+  DiscordAttachment,
+} from "@prisma/client";
+import { Attachment, Client, Collection } from "discord.js";
 
 const prisma = new PrismaClient();
 
@@ -54,5 +59,56 @@ export class DbService {
     });
     await prisma.user.delete({ where: { discordId } });
     await prisma.$disconnect();
+  }
+
+  /**
+   * DiscordAttachmentの情報を登録・更新する。
+   */
+  async setImages(
+    attachments: Collection<string, Attachment>,
+  ): Promise<DiscordAttachment[]> {
+    const images = attachments
+      .map<Omit<DiscordAttachment, "id">>((attachment) => ({
+        attachmentId: attachment.id,
+        contentType: attachment.contentType,
+        description: attachment.description,
+        duration: attachment.duration,
+        ephemeral: attachment.ephemeral,
+        height: attachment.height,
+        name: attachment.name,
+        proxyURL: attachment.proxyURL,
+        size: attachment.size,
+        spoiler: attachment.spoiler,
+        url: attachment.url,
+        waveform: attachment.waveform,
+        width: attachment.width,
+      }))
+      .filter((attachment) => attachment.contentType?.startsWith("image/"));
+    const query = images.map((image) =>
+      prisma.discordAttachment.upsert({
+        where: { attachmentId: image.attachmentId },
+        create: image,
+        update: image,
+      }),
+    );
+    return await prisma.$transaction(query).finally(() => prisma.$disconnect());
+  }
+
+  /**
+   * DiscordAttachmentの情報をすべて取得する。
+   */
+  async getDiscordAttachments(): Promise<DiscordAttachment[]> {
+    return await prisma.discordAttachment
+      .findMany()
+      .finally(() => prisma.$disconnect());
+  }
+
+  /**
+   * DiscordAttachmentの情報をすべて削除する。
+   */
+  async deleteDiscordAttachments(): Promise<void> {
+    await prisma.discordAttachment
+      .deleteMany()
+      .finally(() => prisma.$disconnect());
   }
 }

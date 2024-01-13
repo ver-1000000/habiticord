@@ -6,8 +6,11 @@ import {
   CommandsHandlerService,
 } from "./services/index.js";
 import {
+  DeleteDiscordAttachmentsCommand,
+  GetDiscordAttachmentCommand,
   RegisterCommand,
   RegisterModalCommand,
+  SaveImageCommand,
   UnregisterCommand,
 } from "./commands/index.js";
 
@@ -50,14 +53,20 @@ class Bootstrap {
   const client = new Client({ intents });
   const db = new DbService(client);
   const api = new HabiticaAPIService();
+  const deleteDiscordAttachments = new DeleteDiscordAttachmentsCommand(db);
+  const getDiscordAttachments = new GetDiscordAttachmentCommand(db);
   const registerModal = new RegisterModalCommand(db, api);
   const register = new RegisterCommand();
+  const saveImages = new SaveImageCommand(db);
   const unregister = new UnregisterCommand(db);
   await new Bootstrap(client).run();
   await new CommandsHandlerService(
     client,
+    deleteDiscordAttachments,
+    getDiscordAttachments,
     registerModal,
     register,
+    saveImages,
     unregister,
   ).run();
 })();

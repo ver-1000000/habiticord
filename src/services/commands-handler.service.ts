@@ -5,11 +5,15 @@ import {
   CacheType,
   ChatInputCommandInteraction,
   Client,
+  Message,
   ModalSubmitInteraction,
 } from "discord.js";
 import {
+  DeleteDiscordAttachmentsCommand,
+  GetDiscordAttachmentCommand,
   RegisterCommand,
   RegisterModalCommand,
+  SaveImageCommand,
   UnregisterCommand,
 } from "../commands/index.js";
 
@@ -48,6 +52,24 @@ const COMMANDS: ApplicationCommandDataResolvable[] = [
           type: ApplicationCommandOptionType.Subcommand,
         })),
       },
+      {
+        name: "attachments",
+        description: "DiscordAttachmentsのサブコマンドグループ",
+        type: ApplicationCommandOptionType.SubcommandGroup,
+        options: [
+          {
+            name: "list",
+            description: "登録されたDiscordAttachment一覧を表示する",
+          },
+          {
+            name: "delete",
+            description: "登録されたDiscordAttachmentをすべて削除する",
+          },
+        ].map((option) => ({
+          ...option,
+          type: ApplicationCommandOptionType.Subcommand,
+        })),
+      },
     ],
   },
 ];
@@ -58,8 +80,11 @@ const COMMANDS: ApplicationCommandDataResolvable[] = [
 export class CommandsHandlerService {
   constructor(
     private client: Client,
+    private deleteDiscordAttachments: DeleteDiscordAttachmentsCommand,
+    private getDiscordAttachments: GetDiscordAttachmentCommand,
     private registerModal: RegisterModalCommand,
     private register: RegisterCommand,
+    private saveImages: SaveImageCommand,
     private unregister: UnregisterCommand,
   ) {}
 
@@ -86,6 +111,12 @@ export class CommandsHandlerService {
       if (interaction.isModalSubmit())
         await this.recieveModalSubmit(interaction);
     });
+    // チャットログの監視
+    this.client.on("messageCreate", async (message) => {
+      if (message.author.bot) return;
+      if (message.attachments.size > 0)
+        await this.recieveMessageCreate(message);
+    });
   }
 
   /**
@@ -102,6 +133,12 @@ export class CommandsHandlerService {
     if (subcommand === "unregister") await this.unregister.execute(interaction);
     if (subcommand === "status") interaction.reply("未実装♪");
     if (subcommandGroup === "tasks") interaction.reply(`${subcommand} 未実装♪`);
+    if (subcommandGroup === "attachments") {
+      if (subcommand === "list")
+        await this.getDiscordAttachments.execute(interaction);
+      if (subcommand === "delete")
+        await this.deleteDiscordAttachments.execute(interaction);
+    }
   }
 
   /**
@@ -112,5 +149,13 @@ export class CommandsHandlerService {
   ): Promise<void> {
     if (interaction.customId === "registerModal")
       await this.registerModal.execute(interaction);
+  }
+
+  /**
+   * 特定のメッセージがチャットログに投稿された際の処理振り分け。
+   */
+  private async recieveMessageCreate(message: Message): Promise<void> {
+    if (message.attachments.some((x) => x.contentType?.startsWith("image")))
+      await this.saveImages.execute(message);
   }
 }
